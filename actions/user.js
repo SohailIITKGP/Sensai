@@ -75,20 +75,22 @@ export async function getUserOnboardingStatus() {
     where: { clerkUserId: userId },
   });
 
-  if (!user) throw new Error("User not found");
+  if (!user) {
+    return {
+      isOnboarded: false,
+      error: "User not found"
+    };
+  }
 
   try {
-    const user = await db.user.findUnique({
+    const userDetails = await db.user.findUnique({ 
       where: {
-        clerkUserId: userId,
-      },
-      select: {
-        industry: true,
-      },
+        id: user.id
+      }
     });
 
     return {
-      isOnboarded: !!user?.industry,
+      isOnboarded: !!userDetails?.industry,
     };
   } catch (error) {
     console.error("Error checking onboarding status:", error);
